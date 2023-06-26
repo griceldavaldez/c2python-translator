@@ -200,8 +200,9 @@ statement:
     ;
 
 selectionStatement:
-    IF '(' expression ')' statement
-    | IF '(' expression ')' statement ELSE statement
+    IF { fprintf(yy_output,"if"); } '(' { fprintf(yy_output,"("); } expression ')' { fprintf(yy_output,"):"); } statement
+	| ELSE IF{ fprintf(yy_output,"elif"); } '(' { fprintf(yy_output,"("); } expression ')' { fprintf(yy_output,"):"); } statement
+	| ELSE {fprintf(yy_output,"else:"); } statement
     ;
 
 iterationStatement:

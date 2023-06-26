@@ -1,11 +1,11 @@
 %{
-#include "y.tab.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
+#include "y.tab.h" // Archivo de encabezado generado por YACC/BISON
+#include <stdio.h>    // Para funciones de entrada/salida estándar
+#include <stdlib.h>   // Para funciones de gestión de memoria dinámica
+#include <string.h>   // Para funciones de manipulación de cadenas de caracteres
+#include <ctype.h>    // Para funciones de manipulación de caracteres
 
-int lineCount = 1;
+int lineCount = 1; // Variable para contar las líneas
 
 typedef union {
     char* strVal;
@@ -68,45 +68,62 @@ void return_id(void);
 ")"             { return RPAREN; }
 ";"             { return SEMICOLON; }
 ","             { return COMMA; }
-"."             { return '.'; }
-"!"             { return '!'; }
-"="             { return ASSIGN; }
-"+"             { return PLUS; }
-"-"             { return MINUS; }
-"*"             { return TIMES; }
-"/"             { return DIVIDE; }
-"=="            { return EQ; }
-"!="            { return NEQ; }
-"<"             { return LT; }
-"<="            { return LTE; }
-">"             { return GT; }
-">="            { return GTE; }
-"+="            { return ADD_ASSIGN; }
-"-="            { return SUB_ASSIGN; }
-"*="            { return MUL_ASSIGN; }
-"/="            { return DIV_ASSIGN; }
-"%="            { return MOD_ASSIGN; }
-"++"            { return INC; }
-"--"            { return DEC; }
-"&&"            { return AND; }
+"."             { return('.'); }
+"!"             { return ('!'); }
+"="             { return (ASSIGN); }
+"+"             { return (PLUS); }
+"-"             { return (MINUS); }
+"*"             { return (TIMES); }
+"/"             { return (DIVIDE); }
+"=="            { return (EQ); }
+"!="            { return (NEQ); }
+"<"             { return (LT); }
+"<="            { return (LTE); }
+">"             { return (GT); }
+">="            { return (GTE); }
+"+="            { return (ADD_ASSIGN); }
+"-="            { return (SUB_ASSIGN); }
+"*="            { return (MUL_ASSIGN); }
+"/="            { return (DIV_ASSIGN); }
+"%="            { return (MOD_ASSIGN); }
+"++"            { return (INC); }
+"--"            { return (DEC); }
+"&&"            { return (AND); }
 
 [ \t\r]+        { /* Ignorar espacios en blanco, tabulaciones y retorno de carro */ }
-\n              { lineCount++; }
-.               { printf("Error léxico en la línea %d: Carácter no reconocido '%c'\n", lineCount, yytext[0]); }
+\n              { lineCount++; /* Incrementar número de línea */}
+'.'             { yylval.charVal = yytext[0]; return CHARACTER; }
+
+
+\"[^\"]*\"                              { yylval.strVal = strdup(yytext); return STRING; }
+[-]?[0-9]+                              { yylval.strVal = strdup(yytext); return CONSTANT; }
+[-]?[0-9]+"."[0-9]+([eE][-+]?[0-9]+)?   { yylval.strVal = strdup(yytext); return CONSTANT; }
+[-+]?[0-9]+"."[eE][-+]?[0-9]+           { yylval.strVal = strdup(yytext); return CONSTANT; }
+[a-zA-Z][a-zA-Z0-9]*                    { return_id(); }
+\"([^\"\\]|\\[^\n\\]|\\.)*\n            { // Regla para reconocer cadenas no cerradas
+                                            printf("Error léxico en la línea %d: Cadena no cerrada\n", lineCount);
+                                        }
+\/\*([^*]|(\*+[^*/]))*\n                { // Regla para reconocer comentarios no cerrados
+                                            printf("Error léxico en la línea %d: Comentario no cerrado\n", lineCount);
+                                        }
+.                                       { printf("Error léxico en la línea %d: Carácter no reconocido '%c'\n", lineCount, yytext[0]); /* Ignorar otros caracteres */ }
 
 %%
 
-void return_id(void) {
-    yylval.strVal = strdup(yytext);
-    yylval.intVal = 0;
-    yylval.floatVal = 0.0;
-    yylval.charVal = '\0';
-    yylval.name = NULL;
-    yylval.type = -1;
-    yylval.scope = -1;
-    return ID;
+int main() {
+    yyparse();
+    printf("Cantidad de líneas: %d\n", lineCount); // Imprime la cantidad de líneas
+    return 1;
 }
 
-int yywrap(void) {
-    return 1;
+void return_id(){
+    // Verificar si el identificador es válido
+    if (strcmp(yytext, "int") == 0 || strcmp(yytext, "float") == 0 || strcmp(yytext, "char") == 0 || strcmp(yytext, "double") == 0 || strcmp(yytext, "void") == 0 || strcmp(yytext, "short") == 0 || strcmp(yytext, "long") == 0 || strcmp(yytext, "unsigned") == 0 || strcmp(yytext, "signed") == 0) {
+        // Palabra clave válida, asignar el token correspondiente
+        yylval.strVal = strdup(yytext);
+        return IDENTIFIER;
+    } else {
+        // Identificador no válido, mostrar mensaje de error
+        printf("Error léxico en la línea %d: Identificador no válido '%s'\n", lineCount, yytext);
+    }
 }
