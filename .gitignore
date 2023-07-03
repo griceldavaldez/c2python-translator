@@ -53,3 +53,11 @@ dkms.conf
 
 #Visual studio
 .idea/
+
+#Archivos de compilación
+c2python-translator
+*.py
+lex.yy.c
+programa
+y.tab.c
+y.tab.h
