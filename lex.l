@@ -98,12 +98,22 @@ SymbolTable symTable;
 [-+]?[0-9]+"."[eE][-+]?[0-9]+           { printf("lex: %s\n",yytext); yylval.strVal = strdup(yytext); return CONSTANT; }
 [a-zA-Z][a-zA-Z0-9]*                    { printf("lex: %s\n",yytext); yylval.strVal = strdup(yytext); return(IDENTIFIER);}      /* No esta contemplado id_3 */
 
-\"([^\"\\]|\\[^\n\\]|\\.)*\n            { // Regla para reconocer cadenas no cerradas
+
+\"([^\"\\]|\\[^\n\\]|\\.)*\n            { /* Regla para reconocer cadenas no cerradas */
                                             printf("Error léxico en la línea %d: Cadena no cerrada\n", lineCount);
                                         }
-\/\*([^*]|(\*+[^*/]))*\n                { // Regla para reconocer comentarios no cerrados
+
+
+
+\/\*([^*]|(\*+[^*/]))*(\*+\/)?          { /* Regla para reconocer comentarios no cerrados */
                                             printf("Error léxico en la línea %d: Comentario no cerrado\n", lineCount);
                                         }
-.                                       { printf("Error léxico en la línea %d: Carácter no reconocido '%c'\n", lineCount, yytext[0]); /* Ignorar otros caracteres */ }
+
+
+
+.                                       { /* Regla para manejar errores léxicos no reconocidos */
+                                            printf("Error léxico en la línea %d: Carácter no reconocido '%c'\n", lineCount, yytext[0]);
+                                        }
+
 
 %%
