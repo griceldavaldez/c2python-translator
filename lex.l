@@ -1,4 +1,10 @@
-/*Encabezado*/
+/*Expresiones regulares para simplificar la representacion de tokens*/
+DIGIT       [0-9]
+LETTER      [a-zA-Z_]
+EXPONENTIAL [Ee][+-]?{DIGIT}+
+FS          (f|F|l|LETTER)
+IS          (u|U|l|LETTER)*
+
 %{
     #include "y.tab.h"      // Archivo de encabezado generado por YACC/BISON
     #include <stdio.h>      // Para funciones de entrada/salida estándar
@@ -26,115 +32,85 @@
     symrec *getsym ();
 
     int line_number;            //Numero de lineas
-    void multiline_comments(void);         //Comentarios de varias lineas
-    void oneline_comment(void);    //Comentarios de una linea
+    void multiline_comments();         //Comentarios de varias lineas
+    void oneline_comment();    //Comentarios de una linea
     void count();               //Contador
-
-
-/*int lineCount = 1; // Variable para contar las líneas
-
-extern int yyparse(); // Declaración de la función yyparse() definida en yacc.y
-
-typedef struct {
-    char* name;
-    int type;
-} Symbol;
-
-typedef struct {
-    Symbol* entries;
-    int size;
-} SymbolTable;
-
-SymbolTable symTable;*/
-
 %}
 
-/*Definicion de Tokens*/
+/*Definicion de los tokens*/
 %%
 
-"//"            { oneline_comment(); }
-"/*"            { multiline_comment(); }
-\n              { ++line_number}
-[ \t\v\f]       { count(); }
-"#include".*    { /* Ignorar líneas que comiencen con "#include" */ }
-"const"         { return CONST; }
-"printf"        { yylval.name = strdup(yytext); return PRINTF; }
-.               { printf("Lexema no reconocido: '%c' en la linea %d\n", yytext, line_number);}
-
-"int"           { yylval.type = INT; return INT; }
-"float"         { yylval.type = FLOAT; return FLOAT; }
-"char"          { yylval.type = CHAR; return CHAR; }
-"double"        { yylval.type = DOUBLE; return DOUBLE; }
-"void"          { yylval.type = VOID; return VOID; }
-"unsigned"      { yylval.type = UNSIGNED; return UNSIGNED; }
-"signed"        { yylval.type = SIGNED; return SIGNED; }
-"short"         { yylval.type = SHORT; return SHORT; }
-"long"          { yylval.type = LONG; return LONG; }
-
-"if"            { return IF; }
-"else"          { return ELSE; }
-"while"         { return WHILE; }
-"for"           { return FOR; }
-"do"            { return DO; }
-"switch"        { return SWITCH; }
-"case"          { return CASE; }
-"return"        { return RETURN; }
-"break"         { return BREAK; }
-"continue"      { return CONTINUE; }
-"default"       { return DEFAULT; }
-
-"{"             { return('{'); }
-"}"             { return('}'); }
-"["             { return('['); }
-"]"             { return(']'); }
-"("             { return('('); }
-")"             { return(')'); }
-";"             { return(';'); }
-","             { return(','); }
-"."             { return('.'); }
-"!"             { return ('!'); }
-"="             { return('='); }
-"+"             { return('+'); }
-"-"             { return('-'); }
-"*"             { return('*'); }
-"/"             { return('/'); }
-"%"             { return('%'); }
-"?"             { return('?'); }
-("{"|"<%")      { return('{'); }
-("}"|"%>")      { return('}'); }
-("["|"<:")      { return('['); }
-("]"|":>")      { return(']'); }
-
-"=="            { return (EQ); }
-"!="            { return (NEQ); }
-"<"             { return (LT); }
-"<="            { return (LTE); }
-">"             { return (GT); }
-">="            { return (GTE); }
-"+="            { return (ADD_ASSIGN); }
-"-="            { return (SUB_ASSIGN); }
-"*="            { return (MUL_ASSIGN); }
-"/="            { return (DIV_ASSIGN); }
-"%="            { return (MOD_ASSIGN); }
-"++"            { return (INC); }
-"--"            { return (DEC); }
-"&&"            { return (AND); }
-"||"            { return (OR); }
-
-    ///"main"          { printf("TOKEN: main\n"); printf("lex: %s\n",yytext); return MAIN; }
-
-    //[ \t\r]+        { /* Ignorar espacios en blanco, tabulaciones y retorno de carro */ }
-
-["].*["]                                { yylval.name = strdup(yytext); return STR; }
-['].[']                                 { yylval.name = strdup(yytext); return CHARACTER; } 
-
-[-]?[0-9]+                              { yylval.name = strdup(yytext); return CONSTANT; }
-[-]?[0-9]+"."[0-9]+([eE][-+]?[0-9]+)?   { yylval.name = strdup(yytext); return CONSTANT; }
-[-+]?[0-9]+"."[eE][-+]?[0-9]+           { yylval.name = strdup(yytext); return CONSTANT; }
-[a-zA-Z_]?'(\\.|[^\\'])+'               { yylval.name = strdup(yytext); return CONSTANT; }
-    //[a-zA-Z][a-zA-Z0-9]*                    { yylval.name = strdup(yytext) return IDENTIFIER;}      /* No esta contemplado id_3 */
-[a-zA-Z_][a-zA-Z0-9_]*                  { yylval.name = strdup(yytext) return IDENTIFIER;} 
-
+"/*"                                            { multiline_comments(); }
+"//"                                            { oneline_comment(); }
+"#include ""<"((_|{LETTER}*)"."{LETTER}*)">"    { }
+"const"                                         { return(CONST); }
+"printf"                                        { yylval.name = strdup(yytext); return(PRINTF); }
+"char"                                          { yylval.type = CHAR; return(CHAR); }
+"double"                                        { yylval.type = DOUBLE; return(DOUBLE); }
+"float"                                         { yylval.type = FLOAT; return(FLOAT); }
+"int"                                           { yylval.type = INT; return(INT); }
+"signed"                                        { yylval.type = SIGNED; return(SIGNED); }
+"unsigned"                                      { yylval.type = UNSIGNED; return(UNSIGNED); }
+"void"                                          { yylval.type = VOID; return(VOID); }
+"short"                                          { yylval.type = SHORT; return(SHORT); }
+"long"                                          { yylval.type = LONG; return(LONG); }
+"continue"                                      { return CONTINUE; }
+"default"                                       { return DEFAULT; }
+"do"                                            { return DO; }
+"if"                                            { return IF; }
+"else"                                          { return ELSE; }
+"switch"                                        { return SWITCH; }
+"case"                                          { return CASE; }
+"for"                                           { return FOR; }
+"while"                                         { return WHILE; }
+"return"                                        { return RETURN; }
+"break"                                         { return BREAK; }
+{LETTER}({LETTER}|{DIGIT})*                     { yylval.name = strdup(yytext); return(IDENTIFIER); }
+("-")?{DIGIT}+("."{DIGIT}+)?                    { yylval.name = strdup(yytext); return(CONSTANT);}
+0{DIGIT}+{IS}?                                  { yylval.name = strdup(yytext); return(CONSTANT); }
+{DIGIT}+{IS}?                                   { yylval.name = strdup(yytext); return(CONSTANT); }
+LETTER?'(\\.|[^\\'])+'                          { yylval.name = strdup(yytext); return(CONSTANT); }
+('-')?{DIGIT}+{EXPONENTIAL}{FS}?                { yylval.name = strdup(yytext); return(CONSTANT); }
+('-')?{DIGIT}*"."{DIGIT}+({EXPONENTIAL})?{FS}?  { yylval.name = strdup(yytext); return(CONSTANT); }
+('-')?{DIGIT}+"."{DIGIT}*({EXPONENTIAL})?{FS}?  { yylval.name = strdup(yytext); return(CONSTANT); }
+"+="                                            { return(ADD_ASSIGN); }
+"-="                                            { return(SUB_ASSIGN); }
+"*="                                            { return(MUL_ASSIGN); }
+"/="                                            { return(DIV_ASSIGN); }
+"%="                                            { return(MOD_ASSIGN); }
+"++"                                            { return(INC); }
+"--"                                            { return(DEC); }
+"&&"                                            { return(AND); }
+"||"                                            { return(OR); }
+"<="                                            { return(LTE); }
+">="                                            { return(GTE); }
+"=="                                            { return(EQ); }
+"!="                                            { return(NEQ); }
+";"                                             { return(';'); }
+","                                             { return(','); }
+("{"|"<%")                                      { return('{'); }
+"-"                                             { return('-'); }
+"+"                                             { return('+'); }
+"*"                                             { return('*'); }
+"/"                                             { return('/'); }
+"%"                                             { return('%'); }
+"<"                                             { return('<'); }
+">"                                             { return('>'); }
+"?"                                             { return('?'); }
+("}"|"%>")                                      { return('}'); }
+":"                                             { return(':'); }
+"="                                             { return('='); }
+"("                                             { return('('); }
+")"                                             { return(')'); }
+("["|"<:")                                      { return('['); }
+("]"|":>")                                      { return(']'); }
+"."                                             { return('.'); }
+"!"                                             { return('!'); }
+["].*["]                                        { yylval.name = strdup(yytext); return(STR); }
+['].[']                                         { yylval.name = strdup(yytext); return(CHARACTER); }                                        
+[ \t\v\f]                                       { count(); }
+\n                                              { ++line_number; }
+.                                               { /*Unkown chars*/ }
 
 %%
 
@@ -164,8 +140,7 @@ void count(){
 }
 
 /*Avanza el cursor al final de un comentario de varias lineas*/
-void multiline_comment(void){
-    
+void multiline_comments(){
     //Guarda el caracter actual y el lookahead
     int cursor = input();
     int lookahead = input();
@@ -191,7 +166,6 @@ void multiline_comment(void){
 
 /*Avanza el cursor al final de un comentario de una línea*/
 void oneline_comment(){
-   
     //Cursor
     int cursor = input();
 
