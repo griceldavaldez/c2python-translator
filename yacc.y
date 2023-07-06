@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 
+
 extern char* yytext;
 extern int yylex(); // Declaración de la función generada por Lex
 extern FILE* yyin; // Archivo de entrada para Lex

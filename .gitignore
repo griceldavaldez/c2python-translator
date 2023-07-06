@@ -55,9 +55,8 @@ dkms.conf
 .idea/
 
 #Archivos de compilación
-c2python-translator
+c2python
 *.py
 lex.yy.c
-programa
 y.tab.c
 y.tab.h
