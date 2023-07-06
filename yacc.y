@@ -508,7 +508,7 @@ functionDefinition
 /*Funcion de error*/
 int yyerror(char *s) {
 	error=1;
-	printf("Error in the line number %d near \"%s\": (%s)\n", line_number, yylval.name, s);
+	printf("Error en la linea %d cerca de  \"%s\": (%s)\n", line_number, yylval.name, s);
 }
 
 

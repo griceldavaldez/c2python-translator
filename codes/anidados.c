@@ -1,21 +1,18 @@
 #include <stdio.h>
 
-int main() {
-    int x;
-    x = 5;
+int main(){
+    int i = 1;
+    int j = 2;
+    if (i==1){
+        if (j>1){
+            while (i<20){
+                i++;
+            }
 
-    int y;
-    y = 10;
-
-    if (x > 0) {
-        if (y > 0) {
-            printf("Ambos números son positivos.\n");
-        } else {
-            printf("El primer número es positivo, pero el segundo no lo es.\n");
+            for(i=0; i<20; i++){
+                printf("%d", i);
+            }
         }
-    } else {
-        printf("El primer número no es positivo.\n");
+        
     }
-
-    return 0;
-}
+  }

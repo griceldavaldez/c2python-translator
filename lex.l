@@ -110,7 +110,7 @@ LETTER?'(\\.|[^\\'])+'                          { yylval.name = strdup(yytext); 
 ['].[']                                         { yylval.name = strdup(yytext); return(CHARACTER); }                                        
 [ \t\v\f]                                       { count(); }
 \n                                              { ++line_number; }
-.                                               { /*Unkown chars*/ }
+.                                               { printf("Lexema no reconocido: '%s' en la linea %d\n", yytext, line_number);}
 
 %%
 

@@ -4,9 +4,11 @@ int main() {
     int num;
     num = 6;
 
-    if (num >= 0) {
+    if (num > 0) {
         printf("El número es positivo.\n");
-    } else {
+    } else if(num == 0) {
+        printf("El número es cero.\n");
+    }else{
         printf("El número es negativo.\n");
     }
 

@@ -2,11 +2,14 @@
 
 int main() {
     int i = 1;
+    int suma = 0;
 
-    while (i <= 5) {
-        printf("%d ", i);
+    while (i <= 100) {
+        suma += suma + i;
         i++;
     }
+    
+    printf("%d ", suma);
 
     return 0;
 }

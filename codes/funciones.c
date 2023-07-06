@@ -2,19 +2,28 @@
 
 // Procedimiento
 void imprimirMensaje() {
-    printf("¡Hola, mundo!\n");
+    printf("¡Llamada a procedimiento!\n");
 }
 
-// Función
-int sumar(int num1, int num2) {
-    return num1 + num2;
+//Funcion
+int pow2 (int n, int m) {
+    int i = 1;
+	int res = 1;
+
+	while (i <= m) {
+		res = res * n;
+		i++;
+	}
+	printf("res = %d", res);
+    return res;
 }
+
 
 int main() {
-    imprimirMensaje();
 
-    int resultado = sumar(5, 3);
-    printf("El resultado de la suma es: %d\n", resultado);
-
+	int x;
+    x = pow2(4,3);
     return 0;
+
+    imprimirMensaje();
 }
