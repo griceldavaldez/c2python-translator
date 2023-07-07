@@ -48,7 +48,7 @@
 	int dimension = 0;
     int error=0;                
     int modifier = 0;             
-    int ind = 0;                //Indentation
+    int ind = 0;                //Indentacion
 	int current_type;
 	int current_operation;
 	char type_aux[100];
@@ -63,8 +63,8 @@
     symrec *putsym ();
     symrec *getsym ();
     char* get_type(int type);
-    int is_var_constant(char *name);
-    int is_valid_operation(char *name1, char *name2, char op);
+    int is_var_constant(char *name); //Funcion para verificar si una variable fue declarada como constante
+    int is_valid_operation(char *name1, char *name2, char op); //Funcion para chequeo de tipos
 
 
 %}
@@ -95,8 +95,6 @@
 %type <tptr> declaration
 
 %left INC DEC
-
-/*%nonassoc IF_AUX*/
 %nonassoc ELSE
 
 %start c2python
@@ -416,7 +414,7 @@ declarationList
 	| declarationList declaration
 	;
 
-/*Sentencias*/
+/*Sentencias condicionales*/
 statement
 	: labeledStatement
 	| output
@@ -474,7 +472,8 @@ loopsRelational
 iterationStatement
     : while '(' {print("(");} expr ')' {print("):");} statement
     | while error expr ')' statement { yyerror("Falta un \"(\"");yyerrok; }
-    | DO { print("while(1):"); add_indent();} statement WHILE '(' { print("\tif not ("); } expr ')' { print("):\n\t"); add_indent(); print("\tbreak\n"); } ';' {add_indent();}
+    | DO { print("while(1):"); add_indent();} statement WHILE '(' { print("\tif not ("); } expr ')' 
+	{ print("):\n\t"); add_indent(); print("\tbreak\n"); } ';' {add_indent();}
     | FOR '(' IDENTIFIER '=' CONSTANT ';' { fprintf(yyout, "for %s in range(%s,", $3, $5); } loopsRelational
 	| FOR '(' IDENTIFIER '=' IDENTIFIER ';' { fprintf(yyout, "for %s in range(%s,", $3, $5); } loopsRelational
 	;
@@ -493,7 +492,7 @@ functionDefinition
 		s = getsym($2);
 		if(s==(symrec *)0) s = putsym($2,$1,1);
 		else {
-			printf("Function already declared.");
+			printf("Función ya declarada.");
 			yyerrok;
 		}
 	}
@@ -651,7 +650,7 @@ int main(int argc,char **argv){
 	if(error){
         printf("ERROR EN LA TRADUCCION: %s\n", argv[1]);
     }else{
-        printf("TRADUCCION EXITOSA d %s\nArchivo traducido: %s\n", argv[1], argv[2]);
+        printf("TRADUCCION EXITOSA de %s\nArchivo traducido: %s\n", argv[1], argv[2]);
     }
 
 	return 0;
